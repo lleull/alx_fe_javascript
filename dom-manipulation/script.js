@@ -63,7 +63,6 @@ async function addQuote() {
   populateCategories();
   showQuote(newQuote);
 
-  // Post new quote to the server
   await postQuoteToServer(newQuote);
 
   textElem.value = "";
@@ -158,7 +157,6 @@ async function fetchQuotesFromServer() {
   try {
     const res = await fetch("https://jsonplaceholder.typicode.com/posts");
     const data = await res.json();
-    // Convert server posts to quotes with category 'Server'
     return data.slice(0, 10).map((post) => ({
       text: post.title,
       category: "Server",
@@ -172,16 +170,13 @@ async function fetchQuotesFromServer() {
 async function syncQuotes() {
   const serverQuotes = await fetchQuotesFromServer();
 
-  // Conflict resolution: server data takes precedence
   let merged = [...serverQuotes];
-  // Add any local quotes that do not exist on server (by text)
   quotes.forEach((localQ) => {
     if (!serverQuotes.find((sq) => sq.text === localQ.text)) {
       merged.push(localQ);
     }
   });
 
-  // Check if merged differs from current local
   const localJson = JSON.stringify(quotes);
   const mergedJson = JSON.stringify(merged);
 
@@ -194,17 +189,29 @@ async function syncQuotes() {
 }
 
 function setupSyncInterval() {
-  // Sync every 60 seconds
   setInterval(syncQuotes, 60000);
 }
 
-// Initialization on page load
+// --- Add Event Listener to quoteDisplay ---
+function setupQuoteClickEvent() {
+  const display = document.getElementById("quoteDisplay");
+  display.addEventListener("click", () => {
+    const last = sessionStorage.getItem("lastQuote");
+    if (last) {
+      const quote = JSON.parse(last);
+      alert(`Quote: ${quote.text}\nCategory: ${quote.category}`);
+    } else {
+      alert("No quote to display.");
+    }
+  });
+}
+
+// --- Initialization on page load ---
 window.onload = () => {
   loadQuotes();
   populateCategories();
   loadLastQuote();
-
   document.getElementById("newQuote").onclick = showRandomQuote;
-
+  setupQuoteClickEvent(); // <-- Important: sets up the click listener
   setupSyncInterval();
 };
