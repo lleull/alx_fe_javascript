@@ -192,7 +192,7 @@ function setupSyncInterval() {
   setInterval(syncQuotes, 60000);
 }
 
-// --- Add Event Listener to quoteDisplay ---
+// --- Add Event Listeners to quoteDisplay and lastQuote ---
 function setupQuoteClickEvent() {
   const display = document.getElementById("quoteDisplay");
   display.addEventListener("click", () => {
@@ -204,6 +204,19 @@ function setupQuoteClickEvent() {
       alert("No quote to display.");
     }
   });
+
+  const lastQuoteEl = document.getElementById("lastQuote");
+  if (lastQuoteEl) {
+    lastQuoteEl.addEventListener("click", () => {
+      const last = sessionStorage.getItem("lastQuote");
+      if (last) {
+        const quote = JSON.parse(last);
+        alert(`Last Quote:\n${quote.text}\nCategory: ${quote.category}`);
+      } else {
+        alert("No last quote available.");
+      }
+    });
+  }
 }
 
 // --- Initialization on page load ---
@@ -212,6 +225,6 @@ window.onload = () => {
   populateCategories();
   loadLastQuote();
   document.getElementById("newQuote").onclick = showRandomQuote;
-  setupQuoteClickEvent(); // <-- Important: sets up the click listener
+  setupQuoteClickEvent(); // Setup listeners for quoteDisplay and lastQuote
   setupSyncInterval();
 };
