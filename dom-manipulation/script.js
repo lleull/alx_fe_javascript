@@ -18,7 +18,7 @@ function showQuote(quote) {
 
 function showRandomQuote() {
   const category = document.getElementById("categoryFilter").value;
-  const filtered = category === "all" ? quotes : quotes.filter(q => q.category === category);
+  const filtered = category === "all" ? quotes : quotes.filter((q) => q.category === category);
   if (filtered.length === 0) {
     const display = document.getElementById("quoteDisplay");
     display.textContent = "No quotes available.";
@@ -72,11 +72,11 @@ async function addQuote() {
 
 function populateCategories() {
   const select = document.getElementById("categoryFilter");
-  const categories = Array.from(new Set(quotes.map(q => q.category))).sort();
+  const categories = Array.from(new Set(quotes.map((q) => q.category))).sort();
   const current = localStorage.getItem("selectedCategory") || "all";
 
   select.innerHTML = `<option value="all">All Categories</option>`;
-  categories.forEach(cat => {
+  categories.forEach((cat) => {
     const option = document.createElement("option");
     option.value = cat;
     option.textContent = cat;
@@ -90,7 +90,7 @@ function populateCategories() {
 function filterQuotes() {
   const category = document.getElementById("categoryFilter").value;
   localStorage.setItem("selectedCategory", category);
-  const filtered = category === "all" ? quotes : quotes.filter(q => q.category === category);
+  const filtered = category === "all" ? quotes : quotes.filter((q) => q.category === category);
   if (filtered.length > 0) {
     showQuote(filtered[0]);
   } else {
@@ -112,7 +112,7 @@ function exportQuotesAsJson() {
 
 function importFromJsonFile(event) {
   const fileReader = new FileReader();
-  fileReader.onload = function(e) {
+  fileReader.onload = function (e) {
     try {
       const imported = JSON.parse(e.target.result);
       if (Array.isArray(imported)) {
@@ -147,6 +147,11 @@ function loadLastQuote() {
   }
 }
 
+function createAddQuoteForm() {
+  const last = sessionStorage.getItem("lastQuote");
+  console.log("ASd", last);
+}
+
 // --- Server sync and conflict resolution ---
 
 async function fetchQuotesFromServer() {
@@ -154,7 +159,7 @@ async function fetchQuotesFromServer() {
     const res = await fetch("https://jsonplaceholder.typicode.com/posts");
     const data = await res.json();
     // Convert server posts to quotes with category 'Server'
-    return data.slice(0, 10).map(post => ({
+    return data.slice(0, 10).map((post) => ({
       text: post.title,
       category: "Server",
     }));
@@ -170,8 +175,8 @@ async function syncQuotes() {
   // Conflict resolution: server data takes precedence
   let merged = [...serverQuotes];
   // Add any local quotes that do not exist on server (by text)
-  quotes.forEach(localQ => {
-    if (!serverQuotes.find(sq => sq.text === localQ.text)) {
+  quotes.forEach((localQ) => {
+    if (!serverQuotes.find((sq) => sq.text === localQ.text)) {
       merged.push(localQ);
     }
   });
